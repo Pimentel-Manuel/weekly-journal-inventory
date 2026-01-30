@@ -1,14 +1,29 @@
 <?php
-// api/read_entries.php
-
 header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
 
-// Example journal entries data
-$journalEntries = [
-    ['id' => 1, 'content' => 'First journal entry', 'date' => '2026-01-01'],
-    ['id' => 2, 'content' => 'Second journal entry', 'date' => '2026-01-15'],
-];
+require_once 'config.php';
 
-// Fetch all journal entries
-echo json_encode($journalEntries);
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    $query = "SELECT * FROM journal_entries ORDER BY created_at DESC";
+    $result = $mysqli->query($query);
+
+    if ($result) {
+        $entries = array();
+        while ($row = $result->fetch_assoc()) {
+            $entries[] = $row;
+        }
+        echo json_encode($entries);
+    } else {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => 'Database query failed']);
+    }
+} else {
+    http_response_code(405);
+    echo json_encode(['status' => 'error', 'message' => 'Method not allowed']);
+}
+
+$mysqli->close();
 ?>
