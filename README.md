@@ -1,29 +1,28 @@
-# Weekly Journal Inventory
+# Weekly Journal Inventory Management System
 
-## Description
-The Weekly Journal Inventory is a project designed to help users track and manage their journaling habits effectively. 
+## Overview
+The Weekly Journal Inventory Management System is a project designed to help users manage their weekly journal entries efficiently. This system allows users to input, update, and review their journal entries with ease.
 
-## Table of Contents
-- [Installation Instructions](#installation-instructions)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact Information](#contact-information)
+## Features
+- **User Authentication**: Secure login and user management.
+- **Entry Management**: Create, update, and delete journal entries.
+- **Search Functionality**: Quickly find journal entries by keyword.
+- **Calendar View**: Visualise entries on a calendar interface.
+- **Export Options**: Export entries as PDF or text files.
 
-## Installation Instructions
-To install this project, clone the repository and run the following command:
-```
-git clone https://github.com/Pimentel-Manuel/weekly-journal-inventory.git
-```
+## Technologies Used
+- **Frontend**: HTML, CSS, JavaScript
+- **Backend**: Node.js, Express
+- **Database**: MongoDB
+
+## Installation
+1. Clone the repository: `git clone https://github.com/Pimentel-Manuel/weekly-journal-inventory.git`
+2. Navigate to the project directory: `cd weekly-journal-inventory`
+3. Install dependencies: `npm install`
+4. Start the application: `npm start`
 
 ## Usage
-After installation, you can start using the project by following these instructions...
-
-## Contributing
-Contributions are welcome! Please read the [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests.
+After starting the application, navigate to `http://localhost:3000` to access the Weekly Journal Inventory Management System.
 
 ## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Contact Information
-For any inquiries, please contact Manuel Pimentel at your-troypimentel38@gmail.com.
+This project is licensed under the MIT License.
