@@ -4,7 +4,7 @@
 $host = 'localhost';
 $username = 'db_user';
 $password = 'db_password';
-db_name = 'db_name';
+$db_name = 'db_name';
 
 // Helper Functions
 function connect_db() {

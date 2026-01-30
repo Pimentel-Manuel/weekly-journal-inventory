@@ -1,35 +1,54 @@
 <?php
-// api/create_entry.php
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
 
-// Include database configuration file
-include_once('../config.php');
+require_once 'config.php';
 
 // Check if the request method is POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Retrieve the JSON input
     $input = json_decode(file_get_contents('php://input'), true);
     
-    // Prepare the SQL statement to prevent SQL injection
-    if (isset($input['title']) && isset($input['content'])) {
+    // Validate required fields
+    if (isset($input['week_number']) && isset($input['month']) && 
+        isset($input['title']) && isset($input['content'])) {
+        
+        $week_number = intval($input['week_number']);
+        $month = intval($input['month']);
         $title = $input['title'];
         $content = $input['content'];
-        $date_created = date('Y-m-d H:i:s');
+        $image_url = isset($input['image_url']) ? $input['image_url'] : null;
         
-        // Prepare an SQL statement
-        $stmt = $conn->prepare('INSERT INTO journal_entries (title, content, date_created) VALUES (?, ?, ?)');
-        $stmt->bind_param('sss', $title, $content, $date_created);
+        // Connect to database
+        $mysqli = connect_db();
+        
+        // Prepare an SQL statement to prevent SQL injection
+        $stmt = $mysqli->prepare('INSERT INTO journal_entries (week_number, month, title, content, image_url) VALUES (?, ?, ?, ?, ?)');
+        $stmt->bind_param('iisss', $week_number, $month, $title, $content, $image_url);
 
         // Execute the statement
         if ($stmt->execute()) {
-            echo json_encode(['status' => 'success', 'message' => 'Entry created successfully.']);
+            $entryId = $stmt->insert_id;
+            echo json_encode([
+                'status' => 'success', 
+                'message' => 'Entry created successfully.',
+                'id' => $entryId
+            ]);
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Failed to create entry.']);
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Failed to create entry: ' . $stmt->error]);
         }
+        
         $stmt->close();
+        close_db($mysqli);
     } else {
-        echo json_encode(['status' => 'error', 'message' => 'Invalid input.']);
+        http_response_code(400);
+        echo json_encode(['status' => 'error', 'message' => 'Missing required fields: week_number, month, title, or content.']);
     }
 } else {
+    http_response_code(405);
     echo json_encode(['status' => 'error', 'message' => 'Invalid request method.']);
 }
 ?>
