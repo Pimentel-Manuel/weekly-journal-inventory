@@ -1,22 +1,36 @@
 <?php
-/**
- * GET endpoint to fetch a single journal entry by ID.
- *
- * @param int $id The ID of the journal entry to fetch.
- * @return json Response containing the journal entry data or an error message.
- */
-
 header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
 
-$journalEntries = [
-    1 => ['title' => 'First Entry', 'content' => 'This is the first journal entry.'],
-    2 => ['title' => 'Second Entry', 'content' => 'This is the second journal entry.'],
-];
+require_once 'config.php';
 
-$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    if (isset($_GET['id'])) {
+        $id = intval($_GET['id']);
+        $query = "SELECT * FROM journal_entries WHERE id = ?";
+        $stmt = $mysqli->prepare($query);
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-if (array_key_exists($id, $journalEntries)) {
-    echo json_encode($journalEntries[$id]);
+        if ($result->num_rows > 0) {
+            $entry = $result->fetch_assoc();
+            echo json_encode($entry);
+        } else {
+            http_response_code(404);
+            echo json_encode(['status' => 'error', 'message' => 'Entry not found']);
+        }
+        $stmt->close();
+    } else {
+        http_response_code(400);
+        echo json_encode(['status' => 'error', 'message' => 'ID parameter is required']);
+    }
 } else {
-    echo json_encode(['error' => 'Journal entry not found.']);
+    http_response_code(405);
+    echo json_encode(['status' => 'error', 'message' => 'Method not allowed']);
 }
+
+$mysqli->close();
+?>
