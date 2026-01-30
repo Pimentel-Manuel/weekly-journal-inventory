@@ -26,4 +26,4 @@ Contributions are welcome! Please read the [CONTRIBUTING.md](CONTRIBUTING.md) fo
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Contact Information
-For any inquiries, please contact Manuel Pimentel at your-email@example.com.
+For any inquiries, please contact Manuel Pimentel at your-troypimentel38@gmail.com.
