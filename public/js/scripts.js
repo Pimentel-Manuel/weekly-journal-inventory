@@ -1,6 +1,7 @@
 // Weekly Journal Inventory - Main JavaScript
 
 const API_BASE_URL = '/api';
+const TOTAL_WEEKS = 8; // Total weeks for 2 months
 let currentEditId = null;
 
 // Initialize application when DOM is loaded
@@ -41,8 +42,9 @@ function displayEntries(entries) {
 
 // Create HTML for a single entry card
 function createEntryCard(entry) {
-    const imageHtml = entry.image_url 
-        ? `<img src="${entry.image_url}" class="card-img-top" alt="${entry.title}">`
+    const sanitizedImageUrl = sanitizeImageUrl(entry.image_url);
+    const imageHtml = sanitizedImageUrl 
+        ? `<img src="${escapeHtml(sanitizedImageUrl)}" class="card-img-top" alt="${escapeHtml(entry.title)}">`
         : '<div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;"><i class="fas fa-image fa-3x text-white-50"></i></div>';
     
     return `
@@ -51,8 +53,8 @@ function createEntryCard(entry) {
                 ${imageHtml}
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-2">
-                        <span class="badge bg-primary">Week ${entry.week_number}</span>
-                        <span class="badge bg-info">Month ${entry.month}</span>
+                        <span class="badge bg-primary">Week ${escapeHtml(entry.week_number)}</span>
+                        <span class="badge bg-info">Month ${escapeHtml(entry.month)}</span>
                     </div>
                     <h5 class="card-title">${escapeHtml(entry.title)}</h5>
                     <p class="card-text">${escapeHtml(entry.content)}</p>
@@ -76,17 +78,17 @@ function createEntryCard(entry) {
 // Update statistics dashboard
 function updateStatistics(entries) {
     const totalEntries = entries.length;
-    const lastEntry = entries[0];
+    const mostRecentEntry = entries[0];
     
     document.getElementById('totalEntries').textContent = totalEntries;
     
-    if (lastEntry) {
-        document.getElementById('currentMonth').textContent = lastEntry.month;
-        document.getElementById('lastUpdated').textContent = formatDate(lastEntry.created_at);
+    if (mostRecentEntry) {
+        document.getElementById('currentMonth').textContent = mostRecentEntry.month;
+        document.getElementById('lastUpdated').textContent = formatDate(mostRecentEntry.created_at);
     }
     
-    // Calculate progress (assuming 8 weeks total for 2 months)
-    const progressPercent = Math.min(Math.round((totalEntries / 8) * 100), 100);
+    // Calculate progress based on total expected weeks
+    const progressPercent = Math.min(Math.round((totalEntries / TOTAL_WEEKS) * 100), 100);
     document.getElementById('progressPercent').textContent = `${progressPercent}%`;
 }
 
@@ -172,7 +174,7 @@ async function handleFormSubmit(e) {
 
 // Upload image to server
 async function uploadImage(file) {
-    // Validate file type
+    // Client-side validation (matches server-side validation in upload_image.php)
     const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
         throw new Error('Invalid file type. Only JPG, PNG, GIF, and WebP are allowed.');
@@ -251,10 +253,21 @@ function deleteEntry(id) {
 
 // Utility Functions
 
+// Sanitize image URL to prevent XSS
+function sanitizeImageUrl(url) {
+    if (!url) return null;
+    // Only allow URLs starting with 'uploads/' (relative paths from our upload directory)
+    if (typeof url === 'string' && url.startsWith('uploads/')) {
+        return url;
+    }
+    return null;
+}
+
 // Escape HTML to prevent XSS
 function escapeHtml(text) {
+    if (text === null || text === undefined) return '';
     const div = document.createElement('div');
-    div.textContent = text;
+    div.textContent = String(text);
     return div.innerHTML;
 }
 
@@ -272,10 +285,12 @@ function formatDate(dateString) {
 
 // Show success message
 function showSuccess(message) {
-    alert(message); // Simple alert for now, could be enhanced with toast notifications
+    // TODO: Replace with toast notification system for better UX
+    alert(message);
 }
 
 // Show error message
 function showError(message) {
-    alert('Error: ' + message); // Simple alert for now, could be enhanced with toast notifications
+    // TODO: Replace with toast notification system for better UX
+    alert('Error: ' + message);
 }

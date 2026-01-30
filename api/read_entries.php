@@ -8,6 +8,13 @@ require_once 'config.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $mysqli = connect_db();
+    
+    if (!$mysqli) {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => 'Database connection failed.']);
+        exit;
+    }
+    
     $query = "SELECT * FROM journal_entries ORDER BY created_at DESC";
     $result = $mysqli->query($query);
 
