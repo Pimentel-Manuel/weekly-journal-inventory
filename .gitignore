@@ -1,0 +1,16 @@
+# Standard .gitignore entries
+
+# Ignore uploads folder
+/uploads/
+
+# Ignore config files
+*.config
+
+# Ignore environment files
+.env
+
+# Ignore other unnecessary files
+*.log
+*.tmp
+*.bak
+.DS_Store
